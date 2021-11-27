@@ -151,24 +151,19 @@ class GCF_program:
             for i in self.item:
                 number_string = number_string + str(i)+', '
                 self.current_numbers = number_string
-                self.update_current_numbers()
-            self.update_current_numbers()
         elif len(self.item) >= 2:
             result = str(self.GCF_finder())
             self.current_expression = 'The GCF of your numbers is '+ result
-            self.update_label()
             self.current_numbers = ''
-            self.update_current_numbers()
             self.item.clear()
-            self.backspace_button_updater
         else:
             self.current_expression = 'Please specify at least two numbers'
-            self.update_label()
             self.current_numbers = ''
-            self.update_current_numbers()
             self.item.clear()
-            self.backspace_button_updater()
         self.function_button_updater()
+        self.update_current_numbers()
+        self.update_label()
+        self.backspace_button_updater()
     def update_current_numbers(self):
         self.numbers_label.config(text=self.current_numbers)
     def function_button_updater(self):
@@ -197,12 +192,12 @@ class GCF_program:
         return button
     def create_undo_button(self):
         button = tk.Button(self.button_frame, text='<', fg=WHITE, bg=LABEL_COLOR, font=DIGITS_FONT_STYLE,
-        command=self.undo)
+        command=lambda: self.undo_redo('u'))
         button.grid(row=4, column=4, sticky=tk.NSEW)
         return button
     def create_redo_button(self):
         button = tk.Button(self.button_frame, text='>', fg=WHITE, bg=LABEL_COLOR, font=DIGITS_FONT_STYLE,
-        command=self.redo)
+        command=lambda: self.undo_redo('r'))
         button.grid(row=4, column=5, sticky=tk.NSEW)
         return button
     def undo(self):
@@ -230,6 +225,28 @@ class GCF_program:
                 number_string = number_string + str(i)+', '
                 self.current_numbers = number_string
                 self.update_current_numbers()
+        else:
+            return
+    def undo_redo(self, mode):
+        if mode == 'u':
+            ap_list, pop_list = 'self.loglist', 'self.item'
+            num, boole = 1, True
+        else:
+            ap_list, pop_list = 'self.item', 'self.loglist'
+            num, boole = 0, False
+        if len(eval(pop_list)) > num:
+            eval(ap_list).append(eval(pop_list)[-1])
+            eval(pop_list).pop(-1)
+            number_string = ''
+            for i in self.item:
+                number_string = number_string + str(i)+', '
+                self.current_numbers = number_string
+                self.update_current_numbers()
+        elif len(self.item) == 1 and boole == True:
+            self.loglist.append(self.item[-1])
+            self.item.pop(-1)
+            self.current_numbers = ''
+            self.update_current_numbers()
         else:
             return
     def run(self):
